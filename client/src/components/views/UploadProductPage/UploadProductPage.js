@@ -39,9 +39,10 @@ function UploadProductPage(props) {
         setContinent(event.currentTarget.value);
     }
     const updateImages = (newImages)=>{
-        console.log('updateImages: ', newImages);
+        // console.log('updateImages: ', newImages);
         setImage(newImages);
     }
+
     return (
         <div style={{maxWidth:"700px", margin:"2rem auto"}}>
             <div style={{textAlign:"center", marginBottom:"2rem"}}>

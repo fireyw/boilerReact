@@ -20,18 +20,18 @@ function FileUpload(props) {
             .then(response=>{
                 if(response.data.success){
                     // console.log(response.data)
-                    setImages([...Images, response.data.filePath])
+                    setImages([...Images, response.data.filePath]);
+                    props.test();
                     props.refreshFunction([...Images, response.data.filePath]); //상위 컴포넌트에서 전송 시 Images 값 필요
                 }else{
                     alert('파일 저장 실패');
                 }
-            })
-        ;
+            });
     }
 
     const deleteHandler = (image)=>{
         const currentIndex = Images.indexOf(image);
-        console.log(currentIndex);
+        // console.log(currentIndex);
         let newImages = [...Images];
         newImages.splice(currentIndex, 1); //current번째부터 1개 삭제
         setImages(newImages);
