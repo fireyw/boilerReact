@@ -21,7 +21,6 @@ function FileUpload(props) {
                 if(response.data.success){
                     // console.log(response.data)
                     setImages([...Images, response.data.filePath]);
-                    props.test();
                     props.refreshFunction([...Images, response.data.filePath]); //상위 컴포넌트에서 전송 시 Images 값 필요
                 }else{
                     alert('파일 저장 실패');

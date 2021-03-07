@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Button, Form, Input} from 'antd';
 import FileUpload from "../../utils/FileUpload";
-
+import Axios from 'axios';
 
 const {TextArea}= Input;
 
@@ -42,13 +42,41 @@ function UploadProductPage(props) {
         // console.log('updateImages: ', newImages);
         setImage(newImages);
     }
+    const submitHandler = (event)=>{
+        console.log('submitHanlder call');
+
+        event.preventDefault(); //버튼 클릭시 새로고침 방지
+        if(!Title || !Description || !Price || !Continent || !Image){
+            return alert('모든 값을 채워주세요');
+        }
+
+        const body={
+            //로그인된 사람의 ID 부모 auth.js 에서 가져옴
+            writer: props.user.userData._id,
+            title: Title,
+            description: Description,
+            price: Price,
+            continents: Continent,
+            image: Image
+        }
+        Axios.post('/api/product', body)
+            .then(response=>{
+                console.log(response);
+                if(response.data.success){
+                    alert('상품업로드 성공');
+                    props.history.push('/');
+                }else{
+                    alert('상품업로드 실패');
+                }
+            });
+    }
 
     return (
         <div style={{maxWidth:"700px", margin:"2rem auto"}}>
             <div style={{textAlign:"center", marginBottom:"2rem"}}>
                 <h2>여행 상품 업로드</h2>
             </div>
-            <Form>
+            <Form onSubmit={submitHandler}>
                 <FileUpload refreshFunction={updateImages}/>
                 <br/>
                 <br/>
@@ -71,7 +99,7 @@ function UploadProductPage(props) {
                 </select>
                 <br/>
                 <br/>
-                <Button>
+                <Button htmlType="submit">
                     확인
                 </Button>
             </Form>
