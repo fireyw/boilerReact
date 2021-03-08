@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const productSchema = mongoose.Schema({
     writer:{
         type:Schema.Types.ObjectID,
-        ref:'User'
+        ref:'User'  //이부분이 있어서 populate함수 사용 가능
     },
     title:{
         type:String,
