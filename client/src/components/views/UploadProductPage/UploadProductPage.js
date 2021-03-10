@@ -39,12 +39,13 @@ function UploadProductPage(props) {
         setContinent(event.currentTarget.value);
     }
     const updateImages = (newImages)=>{
-        // console.log('updateImages: ', newImages);
+         //console.log('updateImages: ', newImages);
         setImage(newImages);
     }
     const submitHandler = (event)=>{
-        console.log('submitHanlder call');
+        //console.log('submitHanlder call');
 
+        //console.log('Image:' , Image);
         event.preventDefault(); //버튼 클릭시 새로고침 방지
         if(!Title || !Description || !Price || !Continent || !Image){
             return alert('모든 값을 채워주세요');
