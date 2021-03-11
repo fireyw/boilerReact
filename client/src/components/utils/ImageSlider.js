@@ -17,7 +17,7 @@ function ImageSlider(props) {
 
     return (
 
-        <Carousel autoplay afterChange={onChange}>
+        <Carousel autoplay >
             {couselImage}
         </Carousel>
     );

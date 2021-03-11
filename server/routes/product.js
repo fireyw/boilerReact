@@ -39,15 +39,20 @@ router.post('/', (req, res)=>{
 })
 
 router.post('/products', (req, res)=>{
-
+    let skip = req.body.skip ? parseInt(req.body.skip): 0;
+    let limit = req.body.limit ? parseInt(req.body.limit): 20;
+    console.log(skip);
+    console.log(limit);
     //product collection에 들어있는 모든 상품정보 가져오기
     Product.find()  //조건 없으면 모든 데이터가져옴
         .populate('writer')  //writer에 해당되는 유저 정보를 가져올수있다 이메일 등등
+        .skip(skip)   //mongodb에 해당 내용 전달
+        .limit(limit)
         .exec((err, productInfo)=>{
             if(err){
                 return res.status(400).json({success:false, err})
             } else{
-                return res.status(200).json({success:true, productInfo})
+                return res.status(200).json({success:true, productInfo, postSize:productInfo.length})
             }
 
         })
