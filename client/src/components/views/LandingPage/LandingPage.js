@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import { FaCode } from "react-icons/fa";
 import axios from 'axios'
-import {Icon, Col, Card, Row} from 'antd';
+import {Icon, Col, Card, Row, Carousel} from 'antd';
 import Meta from 'antd/lib/card/Meta';
-
+import ImageSlider from '../../utils/ImageSlider'
 
 function LandingPage() {
     const [Products, setProducts] = useState([]);
@@ -22,11 +22,12 @@ function LandingPage() {
 
 
     const renderCards = Products.map((product, index)=>{
-        console.log(product);
+        // console.log(product);
+        // {<img style={{width:'100%', maxHeight:'150px'}} src={`http://localhost:5000/${product.image[0]}`}/>}
         // 전체 24로 가정 최대4개 최소3개 가장작아질경우 1개
-        return <Col lg={6} md={8} xs={24} key={index}>
+        return <Col lg={6} sm={8} xs={24} key={index}>
             <Card
-                  cover={<img style={{width:'100%', maxHeight:'150px'}} src={`http://localhost:5000/${product.image[0]}`}/>}
+                  cover={<ImageSlider images={product.image}/>}
             >
                 <Meta
                     title={product.title}
