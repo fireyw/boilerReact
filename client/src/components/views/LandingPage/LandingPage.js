@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import {FaCode} from "react-icons/fa";
 import axios from 'axios'
-import {Icon, Col, Card, Row, Carousel} from 'antd';
+import {Icon, Col, Card, Row, Carousel, Collapse} from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import ImageSlider from '../../utils/ImageSlider'
+import CheckBox from "./Section/CheckBox";
+import {continents} from "./Section/Datas";
 
 function LandingPage() {
     const [Products, setProducts] = useState([]);
@@ -75,6 +77,9 @@ function LandingPage() {
                 <h2>Let's travel anywhere<Icon type="rocket"></Icon></h2>
             </div>
             {/*filter*/}
+
+            {/*checkbox*/}
+            <CheckBox list={continents}/>
 
             {/*search*/}
 
