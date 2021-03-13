@@ -12,6 +12,7 @@ function LandingPage() {
     const [Skip, setSkip] = useState(0);
     const [Limit, setLimit] = useState(8);
     const [PostSize, setPostSize] =useState(0);
+    const [Checkboxs, setCheckboxs] = useState([]);
     useEffect(() => {
 
         let body={
@@ -70,6 +71,10 @@ function LandingPage() {
         </Col>
     })
 
+    const handleFilters = (newCheckboxs)=>{
+        console.log('land : ', newCheckboxs);
+        setCheckboxs(newCheckboxs);
+    }
 
     return (
         <div style={{width: '75%', margin: '3rem auto'}}>
@@ -79,7 +84,7 @@ function LandingPage() {
             {/*filter*/}
 
             {/*checkbox*/}
-            <CheckBox list={continents}/>
+            <CheckBox handleFilters={(filter)=>handleFilters(filter, "continents")} list={continents}/>
 
             {/*search*/}
 
