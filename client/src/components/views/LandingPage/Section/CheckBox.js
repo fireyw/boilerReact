@@ -20,9 +20,7 @@ function CheckBox(props) {
 
         props.handleFilters(newChecked);
     }
-    useEffect(() => console.log(Checked), [Checked]);
-
-
+    //useEffect(() => console.log(Checked), [Checked]);
     const renderCheckboxLists = ()=> props.list && props.list.map((value,index)=> {
         return   <React.Fragment key={index}>
             <Checkbox onChange={()=>handleToggle(value._id)}
