@@ -87,11 +87,40 @@ function LandingPage() {
         setSkip(0);
     }
 
+    const handlePrice = (value)=>{
+        const datas=price; //Datas.js 에서 가져온 변수
+        console.log(datas);
+        let array=[]
+
+        //map 사용
+        // datas.map((data,index)=>{
+        //     if(data._id==value){
+        //         array.push(data.array);
+        //     }
+        // })
+
+        //for 사용
+        for(let key in datas){
+            if(datas[key]._id=== parseInt(value, 10)){
+                array=datas[key].array
+            }
+        }
+        return array;
+    }
+
     const handleFilters = (filters, category)=>{
 
         const newFilters= {...Filters};
         newFilters[category]= filters;
+
+        if(category==="price"){
+            let priceValues=handlePrice(filters);
+            // console.log("p: ", priceValues);
+            newFilters[category]=priceValues;
+        }
         showFilteredResults(newFilters);
+        setFilters(newFilters);
+        // console.log("newFilters : ", newFilters);
     }
 
     return (
