@@ -63,8 +63,6 @@ function LandingPage() {
     }
 
     const renderCards = Products.map((product, index) => {
-        // console.log(product);
-        // {<img style={{width:'100%', maxHeight:'150px'}} src={`http://localhost:5000/${product.image[0]}`}/>}
         // 전체 24로 가정 최대4개 최소3개 가장작아질경우 1개
         return <Col lg={6} sm={8} xs={24} key={index}>
             <Card
@@ -126,6 +124,14 @@ function LandingPage() {
     }
 
     const updateSearchTerm = (value)=>{
+        let body={
+            skip:0,
+            limit: Limit,
+            filters: Filters,
+            searchTerm: value
+        }
+        getProducts(body);
+        setSkip(0);
         setSearchTerm(value);
     }
     // useEffect(()=>console.log(SearchTerm), [SearchTerm]);
@@ -160,8 +166,6 @@ function LandingPage() {
                 <button onClick={loadMoreHandler}>더보기</button>
             </div>
             }
-
-
         </div>
     )
 }
