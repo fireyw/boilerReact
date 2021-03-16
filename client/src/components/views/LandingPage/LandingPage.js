@@ -66,7 +66,7 @@ function LandingPage() {
         // 전체 24로 가정 최대4개 최소3개 가장작아질경우 1개
         return <Col lg={6} sm={8} xs={24} key={index}>
             <Card
-                cover={<ImageSlider images={product.image}/>}
+                cover={<a href={`/product/${product._id}`}><ImageSlider images={product.image}/></a>}
             >
                 <Meta
                     title={product.title}

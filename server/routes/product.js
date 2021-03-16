@@ -88,5 +88,17 @@ router.post('/products', (req, res)=>{
     }
 })
 
+router.get('/products_by_id', (req, res)=>{
+    let type= req.query.type; //get 방식 jquery 사용
+    let productId= req.query.id;
+
+    Product.find({_id: productId})
+        .populate('writer')
+        .exec((err, product)=>{
+            if(err) return res.status(400).send(err)
+            return res.status(200).send({success:true, product})
+        })
+})
+
 
 module.exports = router;
