@@ -34,6 +34,7 @@ router.post("/register", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
+    console.log("router /login");
     User.findOne({ email: req.body.email }, (err, user) => {
         if (!user)
             return res.json({
@@ -66,6 +67,64 @@ router.get("/logout", auth, (req, res) => {
             success: true
         });
     });
+});
+
+router.post("/addToCart", auth, (req, res) => {
+    // auth middleware 통과하여 req에 데이터가 담겨온다
+
+    console.log("router: addTocart");
+    let duplicate = false;
+    User.findOne({_id: req.user._id},
+        (err, userInfo) => {  //db정보가 user에 담김
+            // 상품 담겨있는지 확인
+
+            if (userInfo.cart.length > 0) {
+                userInfo.cart.forEach((item) => {
+                    if (item.id === req.body.productId) {
+                        duplicate = true;
+                    }
+                })
+            }
+        })
+
+    // 담겨있으면 개수만 + 1
+    if (duplicate) {
+        User.findOneAndUpdate(
+            {_id: req.user._id, "cart.id": req.body.productId}, //id로 찾고 그 다음 cart.id로 찾는다
+            {$inc: {"cart.$.quantity": 1}},   //increment 약자로 위에 찾은내역 1개 증가시킴
+            {new: true}, //업데이트된 유저정보를 받기 위해
+            (err, userInfo) => {
+                if (err) {
+                    return res.status(400).json({success: false, err})
+                } else {
+                    res.status(200).send(userInfo.cart)
+                }
+
+            }
+        )
+        // 안담겨있으면 새로 추가
+    }else{
+        User.findOneAndUpdate(
+            {_id:req.user._id},
+            {
+                $push: {
+                    cart:{
+                        id: req.body.productId,
+                        quantity: 1,
+                        data:Date.now()
+                    }
+                }
+            },
+            {new:true},
+            (err, userInfo)=>{
+                if(err){
+                    return res.status(400).json({success:false, err})
+                }else{
+                    res.status(200).send(userInfo.cart)
+                }
+            }
+        )
+    }
 });
 
 module.exports = router;
