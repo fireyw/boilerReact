@@ -90,14 +90,30 @@ router.post('/products', (req, res)=>{
 
 router.get('/products_by_id', (req, res)=>{
     let type= req.query.type; //get 방식 jquery 사용
-    let productId= req.query.id;
-
-    Product.find({_id: productId})
-        .populate('writer')
-        .exec((err, product)=>{
-            if(err) return res.status(400).send(err)
-            return res.status(200).send({success:true, product})
-        })
+    let productIds= req.query.id;
+    if(type==="array"){
+        //문자열을 productIds를 배열을 변경
+        productIds = req.query.id.split(',');
+        // ids = req.query.id.split(',');
+        // productIds = ids.map(item=>{
+        //     return item
+        // })
+        // console.log('ids:', ids);
+        // console.log('productIds:', productIds);
+        Product.find({_id: {$in: productIds}})
+            .populate('writer')
+            .exec((err, product)=>{
+                if(err) return res.status(400).send(err)
+                return res.status(200).json({success:true, product})
+            })
+    }else{
+        Product.find({_id: productIds})
+            .populate('writer')
+            .exec((err, product)=>{
+                if(err) return res.status(400).send(err)
+                return res.status(200).send({success:true, product})
+            })
+    }
 })
 
 
