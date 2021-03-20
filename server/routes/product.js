@@ -100,20 +100,14 @@ router.get('/products_by_id', (req, res)=>{
         // })
         // console.log('ids:', ids);
         // console.log('productIds:', productIds);
-        Product.find({_id: {$in: productIds}})
-            .populate('writer')
-            .exec((err, product)=>{
-                if(err) return res.status(400).send(err)
-                return res.status(200).json({success:true, product})
-            })
-    }else{
-        Product.find({_id: productIds})
-            .populate('writer')
-            .exec((err, product)=>{
-                if(err) return res.status(400).send(err)
-                return res.status(200).send({success:true, product})
-            })
+
     }
+    Product.find({_id: {$in: productIds}})
+        .populate('writer')
+        .exec((err, product)=>{
+            if(err) return res.status(400).send(err)
+            return res.status(200).send(product)
+        })
 })
 
 

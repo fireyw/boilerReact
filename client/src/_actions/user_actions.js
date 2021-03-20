@@ -5,7 +5,8 @@ import {
     AUTH_USER,
     LOGOUT_USER,
     ADD_TO_CART,
-    GET_CART_ITEMS
+    GET_CART_ITEMS,
+    REMOVE_CART_ITEM
 } from './types';
 import { USER_SERVER } from '../components/Config.js';
 
@@ -55,7 +56,7 @@ export function addToCart(id){
         productId: id
     }
     const request = axios.post(`${USER_SERVER}/addToCart`, body)
-        .then(response => response.data);
+        .then(response => response.data);  //redux cartDetail과 동일한정보들이 들어있다
 
     return {
         type: ADD_TO_CART,
@@ -71,9 +72,9 @@ export function getCartItems(cartItems, userCart){
         .then(response => {
             //cart item정보는 product 정보를 가져온 후 quantity를 넣어준다. (quantity는 user에 있음)
             userCart.forEach(cartItem => {
-                response.data.product.forEach((productDetail, index) => {
+                response.data.forEach((productDetail, index) => {
                     if (cartItem.id === productDetail._id) {
-                        response.data.product[index].quantity = cartItem.quantity
+                        response.data[index].quantity = cartItem.quantity
                     }
                 })
             })
@@ -82,6 +83,29 @@ export function getCartItems(cartItems, userCart){
 
     return {
         type: GET_CART_ITEMS,
+        payload: request
+    }
+}
+
+export function removeCartItem(productId){
+    const request = axios.get(`${USER_SERVER}/removeFromCart?id=${productId}`)
+        .then(response => {
+            //productInfo와 cart 정보를 조합해서 cartDetail을 만듬
+            //카트에 있는 상품정보를 가지고 와서 카트에 담긴 개수를 상품정보에 추가할 예정
+            response.data.cart.forEach(item=>{
+
+                response.data.productInfo.forEach((product, index)=>{
+                    if(product._id === item.id){
+                        response.data.productInfo[index].quantity=item.quantity
+                    }
+                })
+            })
+
+            return response.data;
+        });
+
+    return {
+        type: REMOVE_CART_ITEM,
         payload: request
     }
 }
