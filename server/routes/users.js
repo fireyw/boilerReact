@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {User} = require("../models/User");
 const {Product} = require('../models/Product')
+const {Payment} = require('../models/Payment')
 const {auth} = require("../middleware/auth");
 
 //=================================
@@ -93,7 +94,7 @@ router.post("/addToCart", auth, (req, res) => {
                         if (err) {
                             return res.status(400).json({success: false, err})
                         } else {
-                            console.log("11: %o",userInfo.cart);
+                            console.log("11: %o", userInfo.cart);
                             res.status(200).send(userInfo.cart)
                         }
 
@@ -150,9 +151,58 @@ router.get('/removeFromCart', auth, (req, res) => {
                     })
                 })
         })
-
-
     //cartDetail 다시 불러오기
+})
+
+router.get('/successBuy', auth, (req, res) => {
+
+    //1. User Collection 안에 History 필드 안에 간단한 결제 정보 넣기
+    let history = [];
+    let transactionData = {};
+
+    req.body.cartDetail.forEach((item) => {
+        history.push({
+            dateOfPurchase: Date.now(),
+            name: item.title,
+            id: item._id,
+            price: item.price,
+            quantity: item.quantity,
+            paymentId: req.body.paymentData.paymentId
+        })
+    })
+
+    //2. Payment Collection 안에 자세한 결제 정보 넣어주기
+    transactionData.user = {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email
+    }
+
+    transactionData.data = req.body.paymentData;
+    transactionData.history = history;
+    //history 정보 저장
+    User.findOneAndUpdate(
+        {_id: req.user._id},
+        {
+            $push: {history: history},
+            $set: {  //데이터 변경
+                cart: []
+            }
+        },
+        {new: true},
+        (err, userInfo) => {
+            if(err) return res.json({success:false, err});
+            //payment에 transactionData 정보 저장
+            const payment= new Payment(transactionData);
+            payment.save((err, doc)=>{
+                if(err) return res.json({success:false, err})
+            });
+        })
+
+
+    //3. Product Collection 안에 Sold 정보 업데이트
+
+
 })
 
 module.exports = router;
