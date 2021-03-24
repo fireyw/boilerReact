@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 import { useSelector } from "react-redux";
 
 function RightMenu(props) {
-  const user = useSelector(state => state.user)
+    const user = useSelector(state => state.user)
 
   const logoutHandler = () => {
     axios.get(`${USER_SERVER}/logout`).then(response => {
@@ -33,11 +33,14 @@ function RightMenu(props) {
   } else {
     return (
       <Menu mode={props.mode}>
+          <Menu.Item key="history">
+              <a href="/history">history</a>
+          </Menu.Item>
           <Menu.Item key="upload">
               <a href="/product/upload">upload</a>
           </Menu.Item>
           <Menu.Item key="cart" style={{paddingBottom: 3}}>
-              <Badge count={5}>
+              <Badge count={user.userData && user.userData.cart.length}>
                   <a href="/user/cart" className="head-example" style={{marginRight:-22}}>
                       <Icon type="shopping-cart" style={{fontSize:30, marginBottom:3}}/>
                   </a>

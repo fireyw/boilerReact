@@ -4,7 +4,7 @@ const {User} = require("../models/User");
 const {Product} = require('../models/Product')
 const {Payment} = require('../models/Payment')
 const {auth} = require("../middleware/auth");
-
+const async = require('async');
 //=================================
 //             User
 //=================================
@@ -154,12 +154,11 @@ router.get('/removeFromCart', auth, (req, res) => {
     //cartDetail 다시 불러오기
 })
 
-router.get('/successBuy', auth, (req, res) => {
-
+router.post('/successBuy', auth, (req, res) => {
+    
     //1. User Collection 안에 History 필드 안에 간단한 결제 정보 넣기
     let history = [];
     let transactionData = {};
-
     req.body.cartDetail.forEach((item) => {
         history.push({
             dateOfPurchase: Date.now(),
@@ -170,16 +169,14 @@ router.get('/successBuy', auth, (req, res) => {
             paymentId: req.body.paymentData.paymentId
         })
     })
-
     //2. Payment Collection 안에 자세한 결제 정보 넣어주기
     transactionData.user = {
         id: req.user._id,
         name: req.user.name,
         email: req.user.email
     }
-
     transactionData.data = req.body.paymentData;
-    transactionData.history = history;
+    transactionData.product = history;
     //history 정보 저장
     User.findOneAndUpdate(
         {_id: req.user._id},
@@ -190,17 +187,47 @@ router.get('/successBuy', auth, (req, res) => {
             }
         },
         {new: true},
-        (err, userInfo) => {
+        (err, user) => {
             if(err) return res.json({success:false, err});
             //payment에 transactionData 정보 저장
             const payment= new Payment(transactionData);
             payment.save((err, doc)=>{
+                console.log("doc:", doc);
                 if(err) return res.json({success:false, err})
+
+                //상품 당 몇개의 quantity를 샀는지
+                let products = [];
+                doc.product.forEach(item=>{
+                    products.push({id:item.id, quantity: item.quantity})
+                })
+                //3. Product Collection 안에 Sold 정보 업데이트
+                async.eachSeries(products, (item, callback) => {
+
+                    Product.update(
+                        { _id: item.id },
+                        {
+                            $inc: {
+                                "sold": item.quantity
+                            }
+                        },
+                        { new: false },
+                        callback
+                    )
+                }, (err)=>{
+                    if(err) return res.status(400).json({success: false, err})
+                    res.status(200).json({
+                        success:true,
+                        cart: user.cart,
+                        cartDetail: [] //결제 성공 후
+                    })
+                })
             });
         })
 
 
-    //3. Product Collection 안에 Sold 정보 업데이트
+
+
+
 
 
 })
