@@ -39,6 +39,12 @@ function RightMenu(props) {
           <Menu.Item key="upload">
               <a href="/product/upload">upload</a>
           </Menu.Item>
+          <Menu.Item key="myPage">
+              <a href="/myPage">MyPage</a>
+          </Menu.Item>
+        <Menu.Item key="logout">
+          <a onClick={logoutHandler}>Logout</a>
+        </Menu.Item>
           <Menu.Item key="cart" style={{paddingBottom: 3}}>
               <Badge count={user.userData && user.userData.cart.length}>
                   <a href="/user/cart" className="head-example" style={{marginRight:-22}}>
@@ -46,10 +52,6 @@ function RightMenu(props) {
                   </a>
               </Badge>
           </Menu.Item>
-        <Menu.Item key="logout">
-          <a onClick={logoutHandler}>Logout</a>
-        </Menu.Item>
-
       </Menu>
     )
   }
