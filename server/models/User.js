@@ -35,6 +35,9 @@ const userSchema = mongoose.Schema({
         default:[]
     },
     image: String,
+    profileImage: String,
+    nickName: String,
+    phone: String,
     token : {
         type: String,
     },
