@@ -23,9 +23,7 @@ function MyPage(props) {
         backgroundColor:"#ffffffff",
         margin: '1rem'
     }
-    const bottom = {
-        verticalAlign:'bottom'
-    }
+
     return (
         <div style={wrapperStyles}>
             <div style={innerDivGrid}>
@@ -33,29 +31,20 @@ function MyPage(props) {
                     <Title level={4} style={{margin:'2rem'}}>프로필
                     </Title>
                 </div>
-                <div>
-                    <Button>이미지업로드</Button>
+                <div style={{alignSelf:'center', justifySelf:'center'}}>
+                    {props.user.userData &&
+                        <img style={{maxWidth: '80px', width: '80px', height: '80px'}}
+                             src={`http://localhost:5000/${props.user.userData.profileImage}`}/>
+                    }
                 </div>
-                <div>
-                    별명:
+                <div style={{alignSelf:'center', justifySelf:'start'}}>
+                    별명: {props.user.userData && props.user.userData.nickName}
+
                 </div>
                 <div style={{alignSelf:'end', padding:'1em'}}>
                     <Button>수정</Button>
                 </div>
-                {/*<div>*/}
-                {/*    <Title level={2} style={{margin:'2rem'}}>프로필*/}
-                {/*    </Title>*/}
-                {/*    <Row gutter={[16,16]}>*/}
-                {/*        <Col lg={12} xs={24} >*/}
-                {/*            <div style={dStyle}>col-6</div>*/}
-                {/*        </Col>*/}
-                {/*    </Row>*/}
-                {/*</div>*/}
-                {/*<div style={bottom}>*/}
-                {/*    <Button>Default Button</Button>*/}
-                {/*</div>*/}
             </div>
-
             <div style={item}>연락처 및 알림</div>
             <div style={item}>지역설정</div>
         </div>
