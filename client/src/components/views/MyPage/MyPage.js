@@ -1,4 +1,6 @@
 import React from 'react';
+import {Router} from 'react-router-dom'
+
 import {Typography,Row, Col, Button} from 'antd';
 
 const {Title, Text} = Typography;
@@ -24,6 +26,10 @@ function MyPage(props) {
         margin: '1rem'
     }
 
+    const moveProfile = ()=>{
+        props.history.push("/profile");
+    }
+
     return (
         <div style={wrapperStyles}>
             <div style={innerDivGrid}>
@@ -42,7 +48,7 @@ function MyPage(props) {
 
                 </div>
                 <div style={{alignSelf: 'end', padding: '1em'}}>
-                    <Button>수정</Button>
+                    <Button onClick={moveProfile}>수정</Button>
                 </div>
             </div>
             <div style={item}>
