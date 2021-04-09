@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {Typography,Row, Col, Button, Input} from 'antd';
+import {Typography, Row, Col, Button, Input, Form} from 'antd';
+import Dropzone from 'react-dropzone'
+import Axios from "axios";
+import axios from "axios";
 
 const {Title, Text} = Typography;
 
 function Profile(props) {
     const [NickName, setNickName] = useState('');
-
+    const [ActiveButton, setActiveButton] = useState('');
+    const [ProfileImage, setProfileImage] = useState('');
     useEffect(() => {
         if (props.user.userData && props.user.userData.nickName) {
             console.log('nickName: ', props.user.userData.nickName);
@@ -13,81 +17,149 @@ function Profile(props) {
         }
     }, [props.user.userData]);
 
+    useEffect(() => {
+        if (props.user.userData && (props.user.userData.nickName != NickName)){
+            setActiveButton('primary');
+            console.log('nickName 값 변경: ' + NickName);
+        }
+    }, [NickName]);
 
-    const wrapperStyles={
+    const wrapperStyles = {
         display: 'grid',
         gridTemplateColumns: '1fr 2fr',
         gridGap: '0rem',
         minHeight: '400px',
         maxWidth: '800px',
         backgroundColor: '#ffffffff',
-        marginLeft:'10rem',
+        marginLeft: '10rem',
 
     }
     const itemCol1 = {
         backgroundColor: "#9f9c9c",
         margin: '0rem 0rem 0rem 1rem',
         padding: '2rem 1rem 1rem 2rem',
-        border:'1px solid',
+        border: '1px solid',
         // maxHeight:'300px',
     }
     const itemCol2 = {
         backgroundColor: "#ffffffff",
         margin: '0rem 1rem 0rem 0rem',
         padding: '2rem 1rem 1rem 2rem',
-        border:'1px solid',
+        border: '1px solid',
     }
     const itemCol2Grid = {
-        display:'grid',
+        display: 'grid',
         gridTemplateColumns: '1fr',
         gridGap: '1rem',
         backgroundColor: "#ffffffff",
         margin: '0rem 1rem 0rem 0rem',
         padding: '2rem 1rem 1rem 2rem',
-        border:'1px solid',
+        border: '1px solid',
     }
 
     const buttonMargin = {
-        margin : '0.5rem',
+        margin: '0.5rem',
     }
 
+    const changeNickName = (event) => {
+        setNickName(event.currentTarget.value);
+    }
+    const submitHandler = (event)=>{
+        console.log('submitHanlder call');
+        event.preventDefault();
+
+        let formData = new FormData();
+
+        const config = {
+            header: {'content-type': 'multipart/form-data'}
+        }
+        formData.append('file', ProfileImage[0]);
+        console.log('formData:',formData);
+        console.log('ProfileImage:',ProfileImage);
+        axios.post('/api/users/profileImage', formData, config)
+            .then(response=>{
+                if(response.data.success){
+                    // console.log(response.data)
+                    setProfileImage(response.data.filePath);
+                }else{
+                    alert('파일 저장 실패');
+                }
+            });
+
+        const body={
+            //로그인된 사람의 ID 부모 auth.js 에서 가져옴
+            nickName: NickName,
+            profileImage: ProfileImage
+        }
+        // Axios.post('/api/product', body)
+        //     .then(response=>{
+        //         console.log(response);
+        //         if(response.data.success){
+        //             alert('상품업로드 성공');
+        //             props.history.push('/');
+        //         }else{
+        //             alert('상품업로드 실패');
+        //         }
+        //     });
+    }
+
+    const dropHandler = files => {
+        console.log('files:', files);
+        setProfileImage(files);
+    }
 
     return (
-
         <div>
-            <div>
+            <Form onSubmit={submitHandler}>
                 <div>
-                    <Title level={4} style={{margin: '2rem'}}>
-                        프로필 수정
-                    </Title>
+                    <div>
+                        <Title level={4} style={{margin: '2rem'}}>
+                            프로필 수정
+                        </Title>
+                    </div>
+                    <div style={{marginLeft: '2rem'}}>프로필과 별명을 수정할 수 있습니다</div>
                 </div>
-                <div style={{marginLeft:'2rem'}}>프로필과 별명을 수정할 수 있습니다</div>
-            </div>
 
-            <div style={wrapperStyles}>
-                <div style={itemCol1}>
-                    프로필사진
-                </div>
-                <div style={itemCol2Grid}>
-                    <div>
-                        {props.user.userData &&
-                        <img style={{maxWidth: '80px', width: '80px', height: '80px'}}
-                             src={`http://localhost:5000/${props.user.userData.profileImage}`}/>
-                        }
+                <div style={wrapperStyles}>
+                    <div style={itemCol1}>
+                        프로필사진
                     </div>
-                    <div>
-                        <Button style={buttonMargin}>사진 변경</Button>
-                        <Button style={buttonMargin}>캐릭터 만들기</Button>
-                        <Button style={buttonMargin}>삭제</Button>
+                    <div style={itemCol2Grid}>
+                        <div>
+                            {props.user.userData &&
+                            <img style={{maxWidth: '80px', width: '80px', height: '80px'}}
+                                 src={`http://localhost:5000/${props.user.userData.profileImage}`}/>
+                            }
+                        </div>
+                        <div>
+                            <Button style={buttonMargin}>
+                                {/*<Dropzone onDrop={acceptedFiles => console.log(acceptedFiles)}>*/}
+                                <Dropzone onDrop={dropHandler}>
+
+                                {({getRootProps, getInputProps}) => (
+                                        <div {...getRootProps()}>
+                                            <input {...getInputProps()} />사진변경
+                                        </div>
+                                    )}
+                                </Dropzone>
+                            </Button>
+                            <Button style={buttonMargin}>캐릭터 만들기</Button>
+                            <Button style={buttonMargin}>삭제</Button>
+                        </div>
+                    </div>
+                    <div style={itemCol1}>
+                        별명
+                    </div>
+                    <div style={itemCol2}>
+                        <Input onChange={changeNickName} value={NickName}/>
+                    </div>
+                    <div style={{gridColumn: '1/3', justifySelf: 'center'}}>
+                        <Button htmlType="submit" type={ActiveButton} style={buttonMargin} >수정</Button>
+                        <Button style={buttonMargin}>취소</Button>
                     </div>
                 </div>
-                <div style={itemCol1}>
-                    별명
-                </div>
-                <div style={itemCol2}>
-                    <Input value={NickName}/>
-                </div>
-            </div>
+            </Form>
+
         </div>
     );
 }

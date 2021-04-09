@@ -5,6 +5,7 @@ const {Product} = require('../models/Product')
 const {Payment} = require('../models/Payment')
 const {auth} = require("../middleware/auth");
 const async = require('async');
+const multer = require('multer');
 //=================================
 //             User
 //=================================
@@ -226,13 +227,28 @@ router.post('/successBuy', auth, (req, res) => {
                 })
             });
         })
+})
 
 
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/profile/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}_${file.originalname}`)
+    }
+})
 
+var upload = multer({ storage: storage }).single("file")
 
-
-
-
+router.post('/profileImage', (req, res)=>{
+    console.log('api call profileImage!');
+    upload(req, res, err=>{
+        if(err){
+            return req.json({success:false, err})
+        }
+        return res.json({success:true, filePath: res.req.file.path, fileName: res.req.filename })
+    })
 })
 
 module.exports = router;
