@@ -65,42 +65,44 @@ function Profile(props) {
         setNickName(event.currentTarget.value);
     }
     const submitHandler = (event)=>{
-        console.log('submitHanlder call');
+        console.log('submitHanlder call: ', ProfileImage);
         event.preventDefault();
 
-        let formData = new FormData();
+        if(ProfileImage!=''){
+            let formData = new FormData();
 
-        const config = {
-            header: {'content-type': 'multipart/form-data'}
+            const config = {
+                header: {'content-type': 'multipart/form-data'}
+            }
+            formData.append('file', ProfileImage[0]);
+            console.log('profileImage api call');
+            axios.post('/api/users/profileImage', formData, config)
+                .then(response=>{
+                    if(response.data.success){
+                        setProfileImage(response.data.filePath);
+                        console.log('프로필 사진 저장 성공');
+                    }else{
+                        alert('파일 저장 실패');
+                    }
+                });
         }
-        formData.append('file', ProfileImage[0]);
-        console.log('formData:',formData);
-        console.log('ProfileImage:',ProfileImage);
-        axios.post('/api/users/profileImage', formData, config)
-            .then(response=>{
-                if(response.data.success){
-                    // console.log(response.data)
-                    setProfileImage(response.data.filePath);
-                }else{
-                    alert('파일 저장 실패');
-                }
-            });
 
         const body={
             //로그인된 사람의 ID 부모 auth.js 에서 가져옴
+            _id: props.user.userData._id,
             nickName: NickName,
             profileImage: ProfileImage
         }
-        // Axios.post('/api/product', body)
-        //     .then(response=>{
-        //         console.log(response);
-        //         if(response.data.success){
-        //             alert('상품업로드 성공');
-        //             props.history.push('/');
-        //         }else{
-        //             alert('상품업로드 실패');
-        //         }
-        //     });
+        Axios.post('/api/users/updateProfile', body)
+            .then(response=>{
+                console.log(response);
+                if(response.data.success){
+                    alert('상품업로드 성공');
+                    props.history.push('/profile');
+                }else{
+                    alert('상품업로드 실패');
+                }
+            });
     }
 
     const dropHandler = files => {

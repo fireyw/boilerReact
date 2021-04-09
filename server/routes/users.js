@@ -159,7 +159,7 @@ router.get('/removeFromCart', auth, (req, res) => {
 })
 
 router.post('/successBuy', auth, (req, res) => {
-    
+
     //1. User Collection 안에 History 필드 안에 간단한 결제 정보 넣기
     let history = [];
     let transactionData = {};
@@ -192,35 +192,35 @@ router.post('/successBuy', auth, (req, res) => {
         },
         {new: true},
         (err, user) => {
-            if(err) return res.json({success:false, err});
+            if (err) return res.json({success: false, err});
             //payment에 transactionData 정보 저장
-            const payment= new Payment(transactionData);
-            payment.save((err, doc)=>{
+            const payment = new Payment(transactionData);
+            payment.save((err, doc) => {
                 console.log("doc:", doc);
-                if(err) return res.json({success:false, err})
+                if (err) return res.json({success: false, err})
 
                 //상품 당 몇개의 quantity를 샀는지
                 let products = [];
-                doc.product.forEach(item=>{
-                    products.push({id:item.id, quantity: item.quantity})
+                doc.product.forEach(item => {
+                    products.push({id: item.id, quantity: item.quantity})
                 })
                 //3. Product Collection 안에 Sold 정보 업데이트
                 async.eachSeries(products, (item, callback) => {
 
                     Product.update(
-                        { _id: item.id },
+                        {_id: item.id},
                         {
                             $inc: {
                                 "sold": item.quantity
                             }
                         },
-                        { new: false },
+                        {new: false},
                         callback
                     )
-                }, (err)=>{
-                    if(err) return res.status(400).json({success: false, err})
+                }, (err) => {
+                    if (err) return res.status(400).json({success: false, err})
                     res.status(200).json({
-                        success:true,
+                        success: true,
                         cart: user.cart,
                         cartDetail: [] //결제 성공 후
                     })
@@ -239,16 +239,36 @@ var storage = multer.diskStorage({
     }
 })
 
-var upload = multer({ storage: storage }).single("file")
+var upload = multer({storage: storage}).single("file")
 
-router.post('/profileImage', (req, res)=>{
-    console.log('api call profileImage!');
-    upload(req, res, err=>{
-        if(err){
-            return req.json({success:false, err})
+router.post('/profileImage', (req, res) => {
+    upload(req, res, err => {
+        if (err) {
+            return req.json({success: false, err})
         }
-        return res.json({success:true, filePath: res.req.file.path, fileName: res.req.filename })
+        return res.json({success: true, filePath: res.req.file.path, fileName: res.req.filename})
     })
+})
+
+//요청 url과 현재페이지가 같으면 '/'만 하면 된다 /api/product
+router.post('/updateProfile', (req, res) => {
+    const user = new User(req.body);
+    User.findOneAndUpdate({_id: req.body._id},
+        {$set: {
+           profileImage: req.body.profileImage,
+           nickName: req.body.nickName,
+            }
+        },
+        {new: true},
+        (err, userInfo) => {
+            if (err) {
+                return res.status(400).json({success: false, err})
+            }else{
+                // res.status(200).send(userInfo.cart)
+                console.log('업데이트 성공 userInfo:', userInfo);
+            }
+        }
+    );
 })
 
 module.exports = router;
