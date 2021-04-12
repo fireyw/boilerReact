@@ -17,8 +17,10 @@ function Profile(props) {
 
     useEffect(() => {
         if (props.user.userData && props.user.userData.nickName) {
-            console.log('nickName: ', props.user.userData.nickName);
             setNickName(props.user.userData.nickName);
+        }
+        if (props.user.userData && props.user.userData.profileImage) {
+            setProfileImage(props.user.userData.profileImage);
         }
     }, [props.user.userData]);
 
@@ -76,15 +78,10 @@ function Profile(props) {
             nickName: NickName
         }
 
-        // formData.append('profileImage', ProfileImage);
-        // if(ActiveButton==='primary'){
-        //     formData.append('nickName', NickName);
-        // }
-
         dispatch(updateProfile(body))
             .then(response => {
                 if (response.payload.success) {
-
+                    props.history.push("/myPage");
                 }
             })
     }
@@ -93,42 +90,10 @@ function Profile(props) {
         console.log('submitHanlder call: ', ProfileImage);
         event.preventDefault();
         reduxUpdateProfile();
-        if(ProfileImage!=''){
-            // reduxUpdateProfile();
-            // let formData = new FormData();
-            //
-            // const config = {
-            //     header: {'content-type': 'multipart/form-data'}
-            // }
-            // formData.append('file', ProfileImage[0]);
-            // console.log('profileImage api call');
-            // axios.post('/api/users/profileImage', formData, config)
-            //     .then(response=>{
-            //         if(response.data.success){
-            //             setProfileImage(response.data.filePath);
-            //             console.log('프로필 사진 저장 성공');
-            //         }else{
-            //             alert('파일 저장 실패');
-            //         }
-            //     });
-        }
-        //
-        // const body={
-        //     //로그인된 사람의 ID 부모 auth.js 에서 가져옴
-        //     _id: props.user.userData._id,
-        //     nickName: NickName,
-        //     profileImage: ProfileImage
-        // }
-        // Axios.post('/api/users/updateProfile', body)
-        //     .then(response=>{
-        //         console.log(response);
-        //         if(response.data.success){
-        //             alert('상품업로드 성공');
-        //             props.history.push('/profile');
-        //         }else{
-        //             alert('상품업로드 실패');
-        //         }
-        //     });
+    }
+
+    const cancelProfile = ()=>{
+        props.history.push("/myPage");
     }
 
     const dropHandler = files => {
@@ -141,7 +106,6 @@ function Profile(props) {
             header: {'content-type': 'multipart/form-data'}
         }
         formData.append('file', files[0]);
-        console.log('profileImage api call');
         Axios.post('/api/users/profileImage', formData, config)
             .then(response=>{
                 if(response.data.success){
@@ -151,7 +115,6 @@ function Profile(props) {
                     alert('파일 저장 실패');
                 }
             });
-        // reduxUpdateProfile();
     }
 
     return (
@@ -174,7 +137,7 @@ function Profile(props) {
                         <div>
                             {props.user.userData &&
                             <img style={{maxWidth: '80px', width: '80px', height: '80px'}}
-                                 src={`http://localhost:5000/${props.user.userData.profileImage}`}/>
+                                 src={`http://localhost:5000/${ProfileImage}`}/>
                             }
                         </div>
                         <div>
@@ -201,7 +164,7 @@ function Profile(props) {
                     </div>
                     <div style={{gridColumn: '1/3', justifySelf: 'center'}}>
                         <Button htmlType="submit" type={ActiveButton} style={buttonMargin} >수정</Button>
-                        <Button style={buttonMargin}>취소</Button>
+                        <Button onClick={cancelProfile} style={buttonMargin}>취소</Button>
                     </div>
                 </div>
             </Form>

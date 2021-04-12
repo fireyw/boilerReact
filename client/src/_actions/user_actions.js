@@ -124,16 +124,8 @@ export function onSuccessBuy(data) {
 
 export function updateProfile(data) {
 
-    console.log('user_action updateProfile api call formData: ', data);
     const request = axios.post('/api/users/updateProfile', data)
         .then(response=>{
-            // if(response.data.success){
-            //     setProfileImage(response.data.filePath);
-            //     console.log('프로필 사진 저장 성공');
-            // }else{
-            //     alert('파일 저장 실패');
-            // }
-            console.log("user_action updateProfile response.data: " , response.data);
             return response.data;
         });
 
@@ -142,4 +134,3 @@ export function updateProfile(data) {
         payload: request
     }
 }
-

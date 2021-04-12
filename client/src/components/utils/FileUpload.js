@@ -19,7 +19,6 @@ function FileUpload(props) {
         axios.post('/api/product/image', formData, config)
             .then(response=>{
                 if(response.data.success){
-                    // console.log(response.data)
                     setImages([...Images, response.data.filePath]);
                     props.refreshFunction([...Images, response.data.filePath]); //상위 컴포넌트에서 전송 시 Images 값 필요
                 }else{
@@ -30,12 +29,10 @@ function FileUpload(props) {
 
     const deleteHandler = (image)=>{
         const currentIndex = Images.indexOf(image);
-        // console.log(currentIndex);
         let newImages = [...Images];
         newImages.splice(currentIndex, 1); //current번째부터 1개 삭제
         setImages(newImages);
         props.refreshFunction(newImages); //상위 컴포넌트에서 전송 시 Images 값 필요
-        // console.log(Images);
     }
 
     return (

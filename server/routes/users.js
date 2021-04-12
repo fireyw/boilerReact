@@ -264,8 +264,8 @@ router.post('/updateProfile', (req, res) => {
             if (err) {
                 return res.status(400).json({success: false, err})
             }else{
-                // res.status(200).send(userInfo.cart)
-                console.log('업데이트 성공 userInfo:', userInfo);
+                return res.json({success: true})
+                // console.log('업데이트 성공 userInfo:', userInfo);
             }
         }
     );
