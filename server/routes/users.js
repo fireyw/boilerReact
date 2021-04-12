@@ -241,6 +241,7 @@ var storage = multer.diskStorage({
 
 var upload = multer({storage: storage}).single("file")
 
+//이미지 파일만 물리 경로에 업로드 후 파일 경로 리턴
 router.post('/profileImage', (req, res) => {
     upload(req, res, err => {
         if (err) {
@@ -252,8 +253,7 @@ router.post('/profileImage', (req, res) => {
 
 //요청 url과 현재페이지가 같으면 '/'만 하면 된다 /api/product
 router.post('/updateProfile', (req, res) => {
-    const user = new User(req.body);
-    User.findOneAndUpdate({_id: req.body._id},
+    User.findOneAndUpdate({_id: req.body.id},
         {$set: {
            profileImage: req.body.profileImage,
            nickName: req.body.nickName,

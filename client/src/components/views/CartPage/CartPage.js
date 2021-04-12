@@ -12,7 +12,6 @@ function CartPage(props) {
     const [ShowSuccess, setShowSuccess] = useState(false);
 
     useEffect(() => {
-
         let cartItems = [];
 
         //리덕스 user state에 cart안에 상품이 있는지 확인

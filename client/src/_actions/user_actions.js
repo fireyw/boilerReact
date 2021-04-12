@@ -7,7 +7,8 @@ import {
     ADD_TO_CART,
     GET_CART_ITEMS,
     REMOVE_CART_ITEM,
-    ON_SUCCESS_BUY
+    ON_SUCCESS_BUY,
+    UPDATE_PROFILE
 } from './types';
 import {USER_SERVER} from '../components/Config.js';
 
@@ -120,3 +121,25 @@ export function onSuccessBuy(data) {
         payload: request
     }
 }
+
+export function updateProfile(data) {
+
+    console.log('user_action updateProfile api call formData: ', data);
+    const request = axios.post('/api/users/updateProfile', data)
+        .then(response=>{
+            // if(response.data.success){
+            //     setProfileImage(response.data.filePath);
+            //     console.log('프로필 사진 저장 성공');
+            // }else{
+            //     alert('파일 저장 실패');
+            // }
+            console.log("user_action updateProfile response.data: " , response.data);
+            return response.data;
+        });
+
+    return {
+        type: UPDATE_PROFILE,
+        payload: request
+    }
+}
+

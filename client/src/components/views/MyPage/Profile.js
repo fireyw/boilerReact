@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {Typography, Row, Col, Button, Input, Form} from 'antd';
 import Dropzone from 'react-dropzone'
+import {updateProfile} from "../../../_actions/user_actions";
+import {useDispatch} from "react-redux";
 import Axios from "axios";
-import axios from "axios";
+
 
 const {Title, Text} = Typography;
 
@@ -10,6 +12,9 @@ function Profile(props) {
     const [NickName, setNickName] = useState('');
     const [ActiveButton, setActiveButton] = useState('');
     const [ProfileImage, setProfileImage] = useState('');
+
+    const dispatch = useDispatch();
+
     useEffect(() => {
         if (props.user.userData && props.user.userData.nickName) {
             console.log('nickName: ', props.user.userData.nickName);
@@ -20,7 +25,6 @@ function Profile(props) {
     useEffect(() => {
         if (props.user.userData && (props.user.userData.nickName != NickName)){
             setActiveButton('primary');
-            console.log('nickName 값 변경: ' + NickName);
         }
     }, [NickName]);
 
@@ -64,50 +68,90 @@ function Profile(props) {
     const changeNickName = (event) => {
         setNickName(event.currentTarget.value);
     }
+
+    const reduxUpdateProfile = () => {
+        let body = {
+            id: props.user.userData._id,
+            profileImage: ProfileImage,
+            nickName: NickName
+        }
+
+        // formData.append('profileImage', ProfileImage);
+        // if(ActiveButton==='primary'){
+        //     formData.append('nickName', NickName);
+        // }
+
+        dispatch(updateProfile(body))
+            .then(response => {
+                if (response.payload.success) {
+
+                }
+            })
+    }
+
     const submitHandler = (event)=>{
         console.log('submitHanlder call: ', ProfileImage);
         event.preventDefault();
-
+        reduxUpdateProfile();
         if(ProfileImage!=''){
-            let formData = new FormData();
-
-            const config = {
-                header: {'content-type': 'multipart/form-data'}
-            }
-            formData.append('file', ProfileImage[0]);
-            console.log('profileImage api call');
-            axios.post('/api/users/profileImage', formData, config)
-                .then(response=>{
-                    if(response.data.success){
-                        setProfileImage(response.data.filePath);
-                        console.log('프로필 사진 저장 성공');
-                    }else{
-                        alert('파일 저장 실패');
-                    }
-                });
+            // reduxUpdateProfile();
+            // let formData = new FormData();
+            //
+            // const config = {
+            //     header: {'content-type': 'multipart/form-data'}
+            // }
+            // formData.append('file', ProfileImage[0]);
+            // console.log('profileImage api call');
+            // axios.post('/api/users/profileImage', formData, config)
+            //     .then(response=>{
+            //         if(response.data.success){
+            //             setProfileImage(response.data.filePath);
+            //             console.log('프로필 사진 저장 성공');
+            //         }else{
+            //             alert('파일 저장 실패');
+            //         }
+            //     });
         }
-
-        const body={
-            //로그인된 사람의 ID 부모 auth.js 에서 가져옴
-            _id: props.user.userData._id,
-            nickName: NickName,
-            profileImage: ProfileImage
-        }
-        Axios.post('/api/users/updateProfile', body)
-            .then(response=>{
-                console.log(response);
-                if(response.data.success){
-                    alert('상품업로드 성공');
-                    props.history.push('/profile');
-                }else{
-                    alert('상품업로드 실패');
-                }
-            });
+        //
+        // const body={
+        //     //로그인된 사람의 ID 부모 auth.js 에서 가져옴
+        //     _id: props.user.userData._id,
+        //     nickName: NickName,
+        //     profileImage: ProfileImage
+        // }
+        // Axios.post('/api/users/updateProfile', body)
+        //     .then(response=>{
+        //         console.log(response);
+        //         if(response.data.success){
+        //             alert('상품업로드 성공');
+        //             props.history.push('/profile');
+        //         }else{
+        //             alert('상품업로드 실패');
+        //         }
+        //     });
     }
 
     const dropHandler = files => {
+        //파일 업로드 후 경로 반환
         console.log('files:', files);
         setProfileImage(files);
+        let formData = new FormData();
+
+        const config = {
+            header: {'content-type': 'multipart/form-data'}
+        }
+        formData.append('file', files[0]);
+        console.log('profileImage api call');
+        Axios.post('/api/users/profileImage', formData, config)
+            .then(response=>{
+                if(response.data.success){
+                    setProfileImage(response.data.filePath);
+                    console.log('프로필 사진 저장 성공');
+                }else{
+                    alert('파일 저장 실패');
+                }
+            });
+        // reduxUpdateProfile();
     }
 
     return (
