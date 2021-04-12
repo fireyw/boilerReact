@@ -8,27 +8,69 @@ import Axios from "axios";
 
 const {Title, Text} = Typography;
 
-function Profile(props) {
-    const [NickName, setNickName] = useState('');
+function ChangeUserInfo(props) {
+
+    const [inputs, setInputs] = useState({
+        Name:'',
+        Phone:'',
+        Email:''
+    })
+
+    const {Name, Phone, Email} = inputs;
+
+    const changeInput = (e)=>{
+        console.log('타켓:', e.target);
+        const {value, name}= e.target;
+        setInputs({
+            ...inputs,
+            [name]: value
+        })
+    }
+
+    // const [Name, setName] = useState('');
+    // const [Phone, setPhone] = useState('');
+    // const [Email, setEmail] = useState('');
+
     const [ActiveButton, setActiveButton] = useState('');
-    const [ProfileImage, setProfileImage] = useState('');
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (props.user.userData && props.user.userData.nickName) {
-            setNickName(props.user.userData.nickName);
+        if (props.user.userData && props.user.userData.name) {
+            console.log('name call:',props.user.userData.name);
+            setInputs({
+                ...inputs,
+                Name:props.user.userData.name
+            });
         }
-        if (props.user.userData && props.user.userData.profileImage) {
-            setProfileImage(props.user.userData.profileImage);
+        if (props.user.userData && props.user.userData.phone) {
+            console.log('name phone:',props.user.userData.phone);
+
+            setInputs({
+                ...inputs,
+                Phone:props.user.userData.phone
+            });
         }
+        if (props.user.userData && props.user.userData.email) {
+            setInputs({
+                ...inputs,
+                Email:props.user.userData.email
+            });
+        }
+        console.log('input:', inputs);
     }, [props.user.userData]);
 
-    useEffect(() => {
-        if (props.user.userData && (props.user.userData.nickName != NickName)){
-            setActiveButton('primary');
-        }
-    }, [NickName]);
+    // useEffect(() => {
+    //     if (props.user.userData && (props.user.userData.name != Name)){
+    //         setActiveButton('primary');
+    //     }
+    //     else if (props.user.userData && (props.user.userData.phone != Phone)){
+    //         setActiveButton('primary');
+    //     }
+    //     else if (props.user.userData && (props.user.userData.email != Email)){
+    //         setActiveButton('primary');
+    //     }
+    // }, [Name,Phone,Email]);
 
     const flexTitle = {
         display:'flex',
@@ -74,15 +116,12 @@ function Profile(props) {
         margin: '0.5rem',
     }
 
-    const changeNickName = (event) => {
-        setNickName(event.currentTarget.value);
-    }
-
     const reduxUpdateProfile = () => {
         let body = {
             id: props.user.userData._id,
-            profileImage: ProfileImage,
-            nickName: NickName
+            name: Name,
+            phone: Phone,
+            email: Email,
         }
 
         dispatch(updateProfile(body))
@@ -94,7 +133,6 @@ function Profile(props) {
     }
 
     const submitHandler = (event)=>{
-        console.log('submitHanlder call: ', ProfileImage);
         event.preventDefault();
         reduxUpdateProfile();
     }
@@ -103,72 +141,40 @@ function Profile(props) {
         props.history.push("/myPage");
     }
 
-    const dropHandler = files => {
-        //파일 업로드 후 경로 반환
-        console.log('files:', files);
-        setProfileImage(files);
-        let formData = new FormData();
-
-        const config = {
-            header: {'content-type': 'multipart/form-data'}
-        }
-        formData.append('file', files[0]);
-        Axios.post('/api/users/profileImage', formData, config)
-            .then(response=>{
-                if(response.data.success){
-                    setProfileImage(response.data.filePath);
-                    console.log('프로필 사진 저장 성공');
-                }else{
-                    alert('파일 저장 실패');
-                }
-            });
-    }
-
     return (
         <div>
             <Form onSubmit={submitHandler}>
                 <div style={flexTitle}>
                     <div>
                         <Title level={4} style={{margin: '2rem'}}>
-                            프로필 수정
+                            연락처 및 알림 설정
                         </Title>
                     </div>
-                    <div style={{marginLeft: '2rem'}}>프로필과 별명을 수정할 수 있습니다</div>
+                    <div style={{marginLeft: '2rem'}}>{props.user.userData && props.user.userData.nickName}님의 연락처 정보입니다.</div>
                 </div>
 
                 <div style={wrapperStyles}>
                     <div style={itemCol1}>
-                        프로필사진
+                        사용자이름
                     </div>
                     <div style={itemCol2Grid}>
-                        <div>
-                            {props.user.userData &&
-                            <img style={{maxWidth: '80px', width: '80px', height: '80px'}}
-                                 src={`http://localhost:5000/${ProfileImage}`}/>
-                            }
-                        </div>
-                        <div>
-                            <Button style={buttonMargin}>
-                                {/*<Dropzone onDrop={acceptedFiles => console.log(acceptedFiles)}>*/}
-                                <Dropzone onDrop={dropHandler}>
-
-                                {({getRootProps, getInputProps}) => (
-                                        <div {...getRootProps()}>
-                                            <input {...getInputProps()} />사진변경
-                                        </div>
-                                    )}
-                                </Dropzone>
-                            </Button>
-                            <Button style={buttonMargin}>캐릭터 만들기</Button>
-                            <Button style={buttonMargin}>삭제</Button>
-                        </div>
+                        <Input name="Name" onChange={changeInput} value={Name}/>
                     </div>
+
                     <div style={itemCol1}>
-                        별명
+                        휴대전화
                     </div>
                     <div style={itemCol2}>
-                        <Input onChange={changeNickName} value={NickName}/>
+                        <Input name="Phone" onChange={changeInput} value={Phone}/>
                     </div>
+
+                    <div style={itemCol1}>
+                        이메
+                    </div>
+                    <div style={itemCol2}>
+                        <Input name="Email" onChange={changeInput} value={Email}/>
+                    </div>
+
                     <div style={{gridColumn: '1/3', justifySelf: 'center'}}>
                         <Button htmlType="submit" type={ActiveButton} style={buttonMargin} >수정</Button>
                         <Button onClick={cancelProfile} style={buttonMargin}>취소</Button>
@@ -180,4 +186,4 @@ function Profile(props) {
     );
 }
 
-export default Profile;
+export default ChangeUserInfo;

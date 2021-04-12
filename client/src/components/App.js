@@ -13,6 +13,7 @@ import CartPage from "./views/CartPage/CartPage";
 import HistoryPage from "./views/HistoryPage/HistoryPage";
 import MyPage from "./views/MyPage/MyPage";
 import Profile from "./views/MyPage/Profile"
+import ChangeUserInfo from "./views/MyPage/ChangeUserInfo";
 //null   Anyone Can go inside
 //true   only logged in user can go inside
 //false  logged in user can't go inside
@@ -33,6 +34,7 @@ function App() {
                     <Route exact path="/history" component={Auth(HistoryPage, true)}/>
                     <Route exact path="/myPage" component={Auth(MyPage, true)}/>
                     <Route exact path="/profile" component={Auth(Profile, true)}/>
+                    <Route exact path="/changeUserInfo" component={Auth(ChangeUserInfo, true)}/>
                 </Switch>
             </div>
             <Footer/>
