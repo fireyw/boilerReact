@@ -251,7 +251,6 @@ router.post('/profileImage', (req, res) => {
     })
 })
 
-//요청 url과 현재페이지가 같으면 '/'만 하면 된다 /api/product
 router.post('/updateProfile', (req, res) => {
     User.findOneAndUpdate({_id: req.body.id},
         {$set: {
@@ -265,6 +264,27 @@ router.post('/updateProfile', (req, res) => {
                 return res.status(400).json({success: false, err})
             }else{
                 return res.json({success: true})
+                // console.log('업데이트 성공 userInfo:', userInfo);
+            }
+        }
+    );
+})
+
+router.post('/changeUserInfo', (req, res) => {
+    User.findOneAndUpdate({_id: req.body.id},
+        {$set: {
+                name: req.body.name,
+                email: req.body.email,
+                phone: req.body.phone,
+            }
+        },
+        {new: true},
+        (err, userInfo) => {
+            if (err) {
+                return res.status(400).json({success: false, err})
+            }else{
+                // return res.json({success: true})
+                return res.status(200).send(userInfo); //payload로 action으로 return 함
                 // console.log('업데이트 성공 userInfo:', userInfo);
             }
         }

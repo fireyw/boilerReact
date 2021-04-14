@@ -8,7 +8,8 @@ import {
     GET_CART_ITEMS,
     REMOVE_CART_ITEM,
     ON_SUCCESS_BUY,
-    UPDATE_PROFILE
+    UPDATE_PROFILE,
+    CHANGE_USER_INFO
 } from './types';
 import {USER_SERVER} from '../components/Config.js';
 
@@ -118,6 +119,19 @@ export function onSuccessBuy(data) {
 
     return {
         type: ON_SUCCESS_BUY,
+        payload: request
+    }
+}
+
+export function changeUserInfo(data) {
+    console.log('action changeUserInfo data:', data);
+    const request = axios.post('/api/users/changeUserInfo', data)
+        .then(response=>{
+            return response.data;
+        });
+
+    return {
+        type: CHANGE_USER_INFO,
         payload: request
     }
 }

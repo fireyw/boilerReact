@@ -7,7 +7,8 @@ import {
     GET_CART_ITEMS,
     REMOVE_CART_ITEM,
     ON_SUCCESS_BUY,
-    UPDATE_PROFILE
+    UPDATE_PROFILE,
+    CHANGE_USER_INFO
 } from '../_actions/types';
  
 
@@ -59,6 +60,17 @@ export default function(state={},action){
                     ...state.userData,
                     nickName: action.payload.nickName,
                     profileImage: action.payload.profileImage
+                }
+            }
+        case CHANGE_USER_INFO:
+            console.log('CALL REDUCE CHANGE_USER_INFO');
+            return {
+                ...state,
+                userData: {
+                    ...state.userData,
+                    name: action.payload.name,
+                    email: action.payload.email,
+                    phone: action.payload.phone,
                 }
             }
         default:

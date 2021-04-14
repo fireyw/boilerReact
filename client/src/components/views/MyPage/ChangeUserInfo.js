@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Typography, Row, Col, Button, Input, Form} from 'antd';
 import Dropzone from 'react-dropzone'
-import {updateProfile} from "../../../_actions/user_actions";
+import {changeUserInfo} from "../../../_actions/user_actions";
 import {useDispatch} from "react-redux";
 import Axios from "axios";
 
@@ -11,66 +11,34 @@ const {Title, Text} = Typography;
 function ChangeUserInfo(props) {
 
     const [inputs, setInputs] = useState({
-        Name:'',
-        Phone:'',
-        Email:''
+        userName:'',
+        userPhone:'',
+        userEmail:''
     })
 
-    const {Name, Phone, Email} = inputs;
+    const {userName, userPhone, userEmail} = inputs;
 
     const changeInput = (e)=>{
-        console.log('타켓:', e.target);
-        const {value, name}= e.target;
+        const {name ,value}= e.target;
         setInputs({
             ...inputs,
             [name]: value
         })
     }
-
-    // const [Name, setName] = useState('');
-    // const [Phone, setPhone] = useState('');
-    // const [Email, setEmail] = useState('');
-
     const [ActiveButton, setActiveButton] = useState('');
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (props.user.userData && props.user.userData.name) {
-            console.log('name call:',props.user.userData.name);
+        if (props.user.userData) {
             setInputs({
                 ...inputs,
-                Name:props.user.userData.name
+                userName:props.user.userData.name,
+                userPhone:props.user.userData.phone,
+                userEmail:props.user.userData.email
             });
         }
-        if (props.user.userData && props.user.userData.phone) {
-            console.log('name phone:',props.user.userData.phone);
-
-            setInputs({
-                ...inputs,
-                Phone:props.user.userData.phone
-            });
-        }
-        if (props.user.userData && props.user.userData.email) {
-            setInputs({
-                ...inputs,
-                Email:props.user.userData.email
-            });
-        }
-        console.log('input:', inputs);
     }, [props.user.userData]);
-
-    // useEffect(() => {
-    //     if (props.user.userData && (props.user.userData.name != Name)){
-    //         setActiveButton('primary');
-    //     }
-    //     else if (props.user.userData && (props.user.userData.phone != Phone)){
-    //         setActiveButton('primary');
-    //     }
-    //     else if (props.user.userData && (props.user.userData.email != Email)){
-    //         setActiveButton('primary');
-    //     }
-    // }, [Name,Phone,Email]);
 
     const flexTitle = {
         display:'flex',
@@ -116,17 +84,21 @@ function ChangeUserInfo(props) {
         margin: '0.5rem',
     }
 
-    const reduxUpdateProfile = () => {
+    const reduxChangeUserInfo = () => {
         let body = {
             id: props.user.userData._id,
-            name: Name,
-            phone: Phone,
-            email: Email,
+            name: userName,
+            phone: userPhone,
+            email: userEmail,
         }
 
-        dispatch(updateProfile(body))
+        dispatch(changeUserInfo(body))
             .then(response => {
-                if (response.payload.success) {
+                console.log('payload: ',response.payload);
+                console.log('payload length: ',response.length);
+
+
+                if (response.payload) {
                     props.history.push("/myPage");
                 }
             })
@@ -134,7 +106,7 @@ function ChangeUserInfo(props) {
 
     const submitHandler = (event)=>{
         event.preventDefault();
-        reduxUpdateProfile();
+        reduxChangeUserInfo();
     }
 
     const cancelProfile = ()=>{
@@ -158,21 +130,21 @@ function ChangeUserInfo(props) {
                         사용자이름
                     </div>
                     <div style={itemCol2Grid}>
-                        <Input name="Name" onChange={changeInput} value={Name}/>
+                        <Input name="userName" onChange={changeInput} value={userName}/>
                     </div>
 
                     <div style={itemCol1}>
                         휴대전화
                     </div>
                     <div style={itemCol2}>
-                        <Input name="Phone" onChange={changeInput} value={Phone}/>
+                        <Input name="userPhone" onChange={changeInput} value={userPhone}/>
                     </div>
 
                     <div style={itemCol1}>
-                        이메
+                        이메일
                     </div>
                     <div style={itemCol2}>
-                        <Input name="Email" onChange={changeInput} value={Email}/>
+                        <Input name="userEmail" onChange={changeInput} value={userEmail}/>
                     </div>
 
                     <div style={{gridColumn: '1/3', justifySelf: 'center'}}>
